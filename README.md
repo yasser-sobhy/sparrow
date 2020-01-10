@@ -1,4 +1,4 @@
-
+**NOTE** Sparrow under heavy development and is broken(moving from C++ to Go)
 ```go
 import ("github.com/yasser.sobhy/sparrow/core")
 

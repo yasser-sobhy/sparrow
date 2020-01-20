@@ -7,7 +7,7 @@ type Notification struct {
 
 // send a notification to a user
 func (n *Notification) Congregate(flock *core.Flock, options core.twitt) {
-    process := func(ws *core.WebSocket, user *core.User, tweet *core.Tweet) bool {
+    process := func(ws *core.Conn, user *core.User, tweet *core.Tweet) bool {
       // find target user
       if user := core.users.Get(tweet.Arguments[0].Value) {
         // deliver notification

@@ -23,7 +23,7 @@ func NewBasicAuth(sparrow *core.Sparrow) BasicAuth {
 
 // Login processes the incoming tweet and allows user to login if user name and password
 // found in UserIDs map
-func (basicAuth *BasicAuth) Login(ws *core.WebSocket, user *core.User, tweet *core.Tweet) {
+func (basicAuth *BasicAuth) Login(ws *core.Conn, user *core.User, tweet *core.Tweet) {
 	userInfo := tweet.Arguments[0]
 	if info, ok := basicAuth.userIDs[string(userInfo.Name)]; ok && info == string(userInfo.Value) {
 		logrus.Info("BasicAuth, loggin in user {}", userInfo.Name)

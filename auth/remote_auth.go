@@ -27,7 +27,7 @@ func NewRemoteAuth(sparrow *core.Sparrow) *RemoteAuth {
 	}
 }
 
-func (remoteAuth *RemoteAuth) Login(ws *core.WebSocket, token []byte) bool {
+func (remoteAuth *RemoteAuth) Login(ws *core.Conn, token []byte) bool {
 
 	resp, err := remoteAuth.client.R().SetBody(token).Post(remoteAuth.APIEndpoint)
 

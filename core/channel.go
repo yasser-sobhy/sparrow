@@ -5,15 +5,15 @@ type Channel struct {
 	// display name
 	Name string
 
-	subscribers   map[WebSocket]struct{}
+	subscribers   map[Conn]struct{}
 	sharedMessage []byte
 }
 
-func (channel *Channel) Join(user WebSocket) {
+func (channel *Channel) Join(user Conn) {
 	channel.subscribers[user] = struct{}{}
 }
 
-func (channel *Channel) Leave(user WebSocket) {
+func (channel *Channel) Leave(user Conn) {
 	delete(channel.subscribers, user)
 }
 

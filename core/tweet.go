@@ -9,7 +9,7 @@ type Tweet struct {
 	Code      []byte //target twitter callback
 	Arguments []Arg  // key-value pairs argments
 	Content   []byte // tweet's content
-	Raw       []byte // message as received by uWebSockets
+	Raw       []byte // message as received by ws
 }
 
 func (tweet Tweet) Valid() bool {

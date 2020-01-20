@@ -19,7 +19,7 @@ func NewLogin() Login {
 
 // Congregate registers middleware functions to flock
 func (login *Login) Congregate(flock *core.Flock, options core.MiddlewareOptions) {
-	process := func(ws *core.WebSocket, user *core.User, tweet *core.Tweet) bool {
+	process := func(ws *core.Conn, user *core.User, tweet *core.Tweet) bool {
 		// trigger a login event
 		net.NewRemoteEvent(login.APIEndpoint).Trigger([]byte("login"), tweet.Arguments[0].Value)
 		return true

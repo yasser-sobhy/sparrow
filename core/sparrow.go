@@ -57,7 +57,7 @@ func (sparrow *Sparrow) OnDisconnection(middleware OnDisconnectionHandler) {
 	sparrow.Flock.AddOnDisconnection(middleware)
 }
 
-func (sparrow *Sparrow) LogUserIn(id []byte, scope Scope, ws *WebSocket) bool {
+func (sparrow *Sparrow) LogUserIn(id []byte, scope Scope, ws *Conn) bool {
 	if sparrow.users.Put(string(id), ws) {
 		//ws.setUserData(new User{id, scope})
 		return true
@@ -65,7 +65,7 @@ func (sparrow *Sparrow) LogUserIn(id []byte, scope Scope, ws *WebSocket) bool {
 	return false
 }
 
-func (sparrow *Sparrow) LogUserOut(id []byte, ws WebSocket) bool {
+func (sparrow *Sparrow) LogUserOut(id []byte, ws Conn) bool {
 	success := sparrow.users.Delete(string(id))
 	//ws.setUserData(nullptr)
 	return success

@@ -22,7 +22,7 @@ func NewDevAuth(sparrow *core.Sparrow) DevAuth {
 }
 
 // Login processes the incoming tweet and allows user to login
-func (devAuth *DevAuth) Login(ws *core.WebSocket, token []byte) bool {
+func (devAuth *DevAuth) Login(ws *core.Conn, token []byte) bool {
 	logrus.Info("DevAuth, loggin in user {}", token)
 	devAuth.sparrow.LogUserIn(token, core.USER, ws)
 	return true

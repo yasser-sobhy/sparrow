@@ -2,7 +2,7 @@ package core
 
 import "github.com/gobwas/ws"
 
-// websocket, user,   tweet,    twitter,      success: the result of the ran twitter, for post middlewares
+// Conn, user,   tweet,    twitter,      success: the result of the ran twitter, for post middlewares
 type TweetHandler func(*Conn, *User, *Tweet) bool
 type OnConnectionHandler func(*Conn, *ws.Handshake) bool
 type OnDisconnectionHandler func(*Conn, *User) bool

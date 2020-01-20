@@ -28,7 +28,7 @@ func NewCap() *Cap {
 
 // Congregate registers cap middleware
 func (cap *Cap) Congregate(flock *core.Flock, options core.MiddlewareOptions) {
-	process := func(ws *core.WebSocket, user *core.User, tweet *core.Tweet) bool {
+	process := func(ws *core.Conn, user *core.User, tweet *core.Tweet) bool {
 		if len(tweet.Raw) > cap.MaxMessageSize {
 			ws.Close()   // may not close, just return false to stop processing messages
 			return false //interrput processing

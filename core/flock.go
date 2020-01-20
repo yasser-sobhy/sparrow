@@ -17,8 +17,21 @@ type Flock struct {
 	OnDisconnectionMiddlewares []OnDisconnectionHandler
 }
 
-func New() Flock {
-	return Flock{}
+func NewFlock() Flock {
+	return Flock{
+		twitters: map[Scope]map[byte]TweetHandler{
+			ANY:   map[byte]TweetHandler{},
+			NONE:  map[byte]TweetHandler{},
+			USER:  map[byte]TweetHandler{},
+			ADMIN: map[byte]TweetHandler{},
+		},
+
+		middlewares:     map[Scope][]TweetHandler{},
+		postMiddlewares: map[Scope][]TweetHandler{},
+
+		OnConnectionMiddlewares:    []OnConnectionHandler{},
+		OnDisconnectionMiddlewares: []OnDisconnectionHandler{},
+	}
 }
 
 // tiwtter callbacks. These are the actual callbacks that will process tweets

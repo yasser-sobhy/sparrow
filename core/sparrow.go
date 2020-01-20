@@ -22,6 +22,7 @@ type Sparrow struct {
 func NewSparrow() *Sparrow {
 	return &Sparrow{
 		TweetParser: &CompactTweetParser{},
+		Flock:       NewFlock(),
 	}
 }
 

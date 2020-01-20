@@ -12,9 +12,9 @@ type CompactTweetParser struct {
 }
 
 // Parse parses a tweet text and returns a Tweet type
-func (parser *CompactTweetParser) Parse(message []byte, user *core.User) *core.Tweet {
+func (parser *CompactTweetParser) Parse(message []byte, user *User) *Tweet {
 
-	tweet := core.Tweet{}
+	tweet := Tweet{}
 	depth := 0 // depth of tweet part
 
 	for i, char := range message {
@@ -44,22 +44,25 @@ func (parser *CompactTweetParser) Compile(code, arguments, content []byte) []byt
 // Serialize serializes a tweet into a string
 // different than raw, as the tweet may have been changed
 // so, this function re-constructs the tweet's string
-func (parser *CompactTweetParser) Serialize(tweet *core.Tweet) []byte {
-	args := [][]byte{}
+func (parser *CompactTweetParser) Serialize(tweet *Tweet) []byte {
+	args := make([][]byte, len(tweet.Arguments))
 
 	for i, arg := range tweet.Arguments {
-		args[i] = []byte{arg.Name..., ':', arg.Value}
+		a := append([]byte{}, arg.Name...)
+		a = append([]byte{}, ':')
+		a = append([]byte{}, arg.Value...)
+		args[i] = a
 	}
 
 	return parser.Compile(tweet.Code, bytes.Join(args[:], []byte{':'}), tweet.Content)
 }
 
-func (parser *CompactTweetParser) processArguments(src []byte) []core.Arg {
-	arguments := []core.Arg{}
+func (parser *CompactTweetParser) processArguments(src []byte) []Arg {
+	arguments := []Arg{}
 
 	for i, char := range src {
 		if char == ':' {
-			arguments = append(arguments, core.Arg{Name: src[i:], Value: src[:i]})
+			arguments = append(arguments, Arg{Name: src[i:], Value: src[:i]})
 		}
 	}
 

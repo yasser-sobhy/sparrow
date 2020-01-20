@@ -5,12 +5,12 @@ type Channel struct {
 	// display name
 	Name string
 
-	subscribers   []WebSocket
+	subscribers   map[WebSocket]struct{}
 	sharedMessage []byte
 }
 
 func (channel *Channel) Join(user WebSocket) {
-	channel.subscribers = append(channel.subscribers, user)
+	channel.subscribers[user] = struct{}{}
 }
 
 func (channel *Channel) Leave(user WebSocket) {
@@ -43,7 +43,7 @@ func (channelLoop *channelLoop) run() {
 
 		for _, channel := range channelLoop.channels {
 			go func() {
-				for _, ws := range channel.subscribers {
+				for ws, _ := range channel.subscribers {
 					ws.Write(channel.sharedMessage)
 				}
 			}()

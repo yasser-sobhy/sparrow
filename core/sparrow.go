@@ -2,18 +2,18 @@ package core
 
 import (
 	"github.com/dghubble/trie"
+	"github.com/gobwas/ws"
+	"github.com/gobwas/ws/wsutil"
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/tidwall/evio"
-	"log"
-	"time"
 )
 
 // Sparrow server
 type Sparrow struct {
 	// contains twitters, followers, leaders, middlewares, and postwares
 	Flock       Flock
-	TweetParser parsers.TweetParser
+	TweetParser TweetParser
 	users       trie.PathTrie
 	channels    trie.PathTrie
 }
@@ -21,7 +21,7 @@ type Sparrow struct {
 // New creates a new Sparrow instance
 func (sparrow *Sparrow) New() *Sparrow {
 	return &Sparrow{
-		TweetParser: &parsers.CompactTweetParser{},
+		TweetParser: &CompactTweetParser{},
 	}
 }
 
@@ -74,31 +74,25 @@ func (sparrow *Sparrow) LogUserOut(id []byte, ws WebSocket) bool {
 //Run starts listening for incoming messages
 func (sparrow *Sparrow) Run() {
 
-	var events evio.Events
-	events.Opened = func(c evio.Conn) (out []byte, opts evio.Options, action evio.Action) {
+	nano := NanoWebsocket{}
+	nano.OnOpen = func(c *Conn, handshake *ws.Handshake) {
 		for _, middleware := range sparrow.Flock.OnConnectionMiddlewares {
-			middleware(c, req)
+			middleware(c, handshake)
 		}
 		return
 	}
 
-	events.Closed = func(c evio.Conn, err error) (action evio.Action) {
+	nano.OnClose = func(c *Conn, err error) (action evio.Action) {
 		user := c.Context().(User)
-		for _, middleware := range sparrow.Flock.OnConnectionMiddlewares {
-			middleware(c, user)
+		for _, middleware := range sparrow.Flock.OnDisconnectionMiddlewares {
+			middleware(c, &user)
 		}
 		return
 	}
 
-	events.Tick = func() (delay time.Duration, action evio.Action) {
-		log.Printf("tick")
-		delay = time.Second
-		return
-	}
-
-	events.Data = func(c evio.Conn, in []byte) (out []byte, action evio.Action) {
+	nano.OnMessage = func(c *Conn, message wsutil.Message) (out []byte, action evio.Action) {
 		user, userOk := c.Context().(User)
-		tweet := sparrow.TweetParser.Parse(in, user)
+		tweet := sparrow.TweetParser.Parse(message.Payload, &user)
 		scope := NONE
 		if userOk {
 			scope = user.Scope
@@ -114,16 +108,16 @@ func (sparrow *Sparrow) Run() {
 
 				// run middlware, any middlware that return false will interrupt execution, tiwtter will not run
 				for _, middleware := range middlewares {
-					proceed = proceed && middleware(ws, user, tweet)
+					proceed = proceed && middleware(c, &user, tweet)
 				}
 
 				if proceed {
-					twitter(ws, user, tweet)
+					twitter(c, &user, tweet)
 				}
 
 				// run postware
 				for _, middleware := range postMiddlewares {
-					middleware(c, user, tweet)
+					middleware(c, &user, tweet)
 				}
 			}
 			//else log('twitter not found', message)
@@ -137,7 +131,7 @@ func (sparrow *Sparrow) Run() {
 
 	viper.SetDefault("sparrow.port", 9001)
 	port := viper.GetString("sparrow.port")
-	if err := evio.Serve(events, "tcp://localhost:"+port); err != nil {
+	if err := nano.Serve("tcp://localhost:" + port); err != nil {
 		panic(err.Error())
 	}
 

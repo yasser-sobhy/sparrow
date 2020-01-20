@@ -2,5 +2,5 @@ package core
 
 // TweetParser an interface for twwet parsers
 type TweetParser interface {
-	Parse(message []byte, user *User) *core.Tweet
+	Parse(message []byte, user *User) *Tweet
 }

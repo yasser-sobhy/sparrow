@@ -12,7 +12,7 @@ type CompactTweetParser struct {
 }
 
 // Parse parses a tweet text and returns a Tweet type
-func (parser *CompactTweetParser) Parse(message []byte, user *User) *Tweet {
+func (parser *CompactTweetParser) Parse(message []byte) *Tweet {
 
 	tweet := Tweet{}
 	depth := 0 // depth of tweet part

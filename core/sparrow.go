@@ -19,7 +19,7 @@ type Sparrow struct {
 }
 
 // New creates a new Sparrow instance
-func (sparrow *Sparrow) New() *Sparrow {
+func NewSparrow() *Sparrow {
 	return &Sparrow{
 		TweetParser: &CompactTweetParser{},
 	}
@@ -83,7 +83,8 @@ func (sparrow *Sparrow) Run() {
 	}
 
 	nano.OnClose = func(c *Conn, err error) (action evio.Action) {
-		user := c.Context().(User)
+		user, _ := c.Context().(User)
+
 		for _, middleware := range sparrow.Flock.OnDisconnectionMiddlewares {
 			middleware(c, &user)
 		}
@@ -91,8 +92,8 @@ func (sparrow *Sparrow) Run() {
 	}
 
 	nano.OnMessage = func(c *Conn, message wsutil.Message) (out []byte, action evio.Action) {
-		user, userOk := c.Context().(User)
-		tweet := sparrow.TweetParser.Parse(message.Payload, &user)
+		user, userOk := c.Context().(*User)
+		tweet := sparrow.TweetParser.Parse(message.Payload)
 		scope := NONE
 		if userOk {
 			scope = user.Scope
@@ -100,7 +101,7 @@ func (sparrow *Sparrow) Run() {
 
 		if tweet.Valid() {
 			middlewares := sparrow.Flock.GetMiddlewares(scope)
-			twitter, twitterOk := sparrow.Flock.Get('0', scope) // auto twitter = flock.get(scope, *tweet.code)
+			twitter, twitterOk := sparrow.Flock.Get(tweet.Code[0], scope)
 			postMiddlewares := sparrow.Flock.GePosttMiddlewares(scope)
 
 			if twitterOk {
@@ -108,16 +109,16 @@ func (sparrow *Sparrow) Run() {
 
 				// run middlware, any middlware that return false will interrupt execution, tiwtter will not run
 				for _, middleware := range middlewares {
-					proceed = proceed && middleware(c, &user, tweet)
+					proceed = proceed && middleware(c, user, tweet)
 				}
 
 				if proceed {
-					twitter(c, &user, tweet)
+					twitter(c, user, tweet)
 				}
 
 				// run postware
 				for _, middleware := range postMiddlewares {
-					middleware(c, &user, tweet)
+					middleware(c, user, tweet)
 				}
 			}
 			//else log('twitter not found', message)

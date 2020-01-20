@@ -25,7 +25,7 @@ func New() Flock {
 // they're not middlewares
 func (flock *Flock) Add(twitter TweetHandler, options TwitterOptions) {
 	// if twitter found
-	flock.twitters[options.Scope][options.code] = twitter
+	flock.twitters[options.Scope][options.Code] = twitter
 }
 
 func (flock *Flock) AddMany(twitters []TweetHandler, options TwitterOptions) {

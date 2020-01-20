@@ -57,14 +57,14 @@ func (nano *NanoWebsocket) Serve(addr ...string) error {
 	var events evio.Events
 	events.Opened = func(conn evio.Conn) (out []byte, opts evio.Options, action evio.Action) {
 		c := Conn{Evio: conn, upgraded: false}
-		conn.SetContext(c)
+		conn.SetContext(&c)
 		return
 	}
 
 	events.Closed = func(conn evio.Conn, err error) (action evio.Action) {
-		c, ok := conn.Context().(Conn)
+		c, ok := conn.Context().(*Conn)
 		if ok {
-			return nano.OnClose(&c, err)
+			return nano.OnClose(c, err)
 		}
 
 		return
@@ -72,7 +72,7 @@ func (nano *NanoWebsocket) Serve(addr ...string) error {
 
 	events.Data = func(conn evio.Conn, in []byte) (out []byte, action evio.Action) {
 
-		c, ok := conn.Context().(Conn)
+		c, ok := conn.Context().(*Conn)
 
 		if !ok {
 			logrus.Error("couldn't assert connection", conn.RemoteAddr().String())
@@ -80,7 +80,7 @@ func (nano *NanoWebsocket) Serve(addr ...string) error {
 		}
 
 		if c.upgraded {
-			return nano.processData(&c, in)
+			return nano.processData(c, in)
 		}
 
 		rwb := ReadWriteBuffer{
@@ -96,7 +96,8 @@ func (nano *NanoWebsocket) Serve(addr ...string) error {
 		}
 
 		out = rwb.w.Bytes()
-		nano.OnOpen(&c, &handshake)
+		c.upgraded = true
+		nano.OnOpen(c, &handshake)
 		return
 	}
 

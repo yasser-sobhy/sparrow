@@ -4,7 +4,7 @@ type Env struct {
 	environment string
 }
 
-var env *Env
+var env = Env{}
 
 func New() Env { return Env{"development"} }
 

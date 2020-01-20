@@ -15,16 +15,18 @@ type CompactTweetParser struct {
 func (parser *CompactTweetParser) Parse(message []byte) *Tweet {
 
 	tweet := Tweet{}
-	depth := 0 // depth of tweet part
+	depth := 0   // depth of tweet part
+	argsEnd := 0 // index of args ;
 
 	for i, char := range message {
 		if char == ';' { //&& message[i-1] != '\\'
 			if depth == 0 {
 				tweet.Code = message[:i]
 			} else if depth == 1 {
-				tweet.Arguments = parser.processArguments(message[len(tweet.Code):i])
+				argsEnd = i + 1
+				tweet.Arguments = parser.processArguments(message[len(tweet.Code)+1 : i])
 			} else if depth == 2 {
-				tweet.Content = message[i:]
+				tweet.Content = message[argsEnd:i]
 			}
 			depth++
 		}

@@ -14,13 +14,20 @@ type Conn struct {
 	Evio     evio.Conn
 	upgraded bool
 	ctx      interface{}
+	out      []byte
 }
 
 func (c *Conn) Context() interface{}       { return c.ctx }
 func (c *Conn) SetContext(ctx interface{}) { c.ctx = ctx }
 
 func (c *Conn) Write(message []byte) {
+	c.out = message
+	c.Evio.Wake()
+}
 
+func (c *Conn) WriteMessage(message []byte) {
+	c.out, _ = ws.CompileFrame(ws.NewTextFrame(message))
+	c.Evio.Wake()
 }
 
 func (c *Conn) Close() {
@@ -80,6 +87,12 @@ func (nano *NanoWebsocket) Serve(addr ...string) error {
 		}
 
 		if c.upgraded {
+			// sending data
+			if in == nil {
+				out = c.out
+				return
+			}
+
 			return nano.processData(c, in)
 		}
 
@@ -122,6 +135,7 @@ func (nano *NanoWebsocket) processData(conn *Conn, in []byte) (out []byte, actio
 
 	h, err := rd.NextFrame()
 	if err != nil {
+		logrus.Error("closig conn. failed to read NextFrame ")
 		action = evio.Close
 		return
 	}

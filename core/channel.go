@@ -5,15 +5,15 @@ type Channel struct {
 	// display name
 	Name string
 
-	subscribers   map[Conn]struct{}
+	subscribers   map[*Conn]struct{}
 	sharedMessage []byte
 }
 
-func (channel *Channel) Join(user Conn) {
+func (channel *Channel) Join(user *Conn) {
 	channel.subscribers[user] = struct{}{}
 }
 
-func (channel *Channel) Leave(user Conn) {
+func (channel *Channel) Leave(user *Conn) {
 	delete(channel.subscribers, user)
 }
 

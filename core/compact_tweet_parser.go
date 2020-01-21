@@ -21,10 +21,10 @@ func (parser *CompactTweetParser) Parse(message []byte) *Tweet {
 	for i, char := range message {
 		if char == ';' { //&& message[i-1] != '\\'
 			if depth == 0 {
-				tweet.Code = message[:i]
+				tweet.Code = string(message[:i])
 			} else if depth == 1 {
 				argsEnd = i + 1
-				tweet.Arguments = parser.processArguments(message[len(tweet.Code)+1 : i])
+				tweet.Args = parser.processArguments(message[len(tweet.Code)+1 : i])
 			} else if depth == 2 {
 				tweet.Content = message[argsEnd:i]
 			}
@@ -38,8 +38,8 @@ func (parser *CompactTweetParser) Parse(message []byte) *Tweet {
 
 // Compile creates a raw tweet out of twwet parts
 //example: char *args[]{tweet.code, tweet.argument, tweet.content}
-func (parser *CompactTweetParser) Compile(code, arguments, content []byte) []byte {
-	raw := [][]byte{code, arguments, content}
+func (parser *CompactTweetParser) Compile(code, arguments string, content []byte) []byte {
+	raw := [][]byte{[]byte(code), []byte(arguments), content}
 	return bytes.Join(raw, []byte{';'})
 }
 
@@ -47,24 +47,21 @@ func (parser *CompactTweetParser) Compile(code, arguments, content []byte) []byt
 // different than raw, as the tweet may have been changed
 // so, this function re-constructs the tweet's string
 func (parser *CompactTweetParser) Serialize(tweet *Tweet) []byte {
-	args := make([][]byte, len(tweet.Arguments))
+	args := ""
 
-	for i, arg := range tweet.Arguments {
-		a := append([]byte{}, arg.Name...)
-		a = append([]byte{}, ':')
-		a = append([]byte{}, arg.Value...)
-		args[i] = a
+	for k, v := range tweet.Args {
+		args += k + ":" + v
 	}
 
-	return parser.Compile(tweet.Code, bytes.Join(args[:], []byte{':'}), tweet.Content)
+	return parser.Compile(tweet.Code, args, tweet.Content)
 }
 
-func (parser *CompactTweetParser) processArguments(src []byte) []Arg {
-	arguments := []Arg{}
+func (parser *CompactTweetParser) processArguments(src []byte) map[string]string {
+	arguments := map[string]string{}
 
 	for i, char := range src {
 		if char == ':' {
-			arguments = append(arguments, Arg{Name: src[i:], Value: src[:i]})
+			arguments[string(src[i:])] = string(src[:i])
 		}
 	}
 

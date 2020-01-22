@@ -6,7 +6,7 @@ import (
 )
 
 // InitLogger intializers logrus logger
-func InitLogger() {
+func init() {
 	logrus.SetFormatter(&log.TextFormatter{
 		DisableColors: true,
 		FullTimestamp: true,

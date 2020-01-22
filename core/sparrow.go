@@ -14,8 +14,8 @@ type Sparrow struct {
 	// contains twitters, followers, leaders, middlewares, and postwares
 	Flock       Flock
 	TweetParser TweetParser
-	users       trie.PathTrie
-	channels    trie.PathTrie
+	Users       trie.PathTrie
+	Channels    trie.PathTrie
 }
 
 // New creates a new Sparrow instance

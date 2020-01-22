@@ -7,7 +7,7 @@ import (
 )
 
 // Init set config path name and file
-func Init() {
+func init() {
 	viper.SetConfigName("config")         // name of config file (without extension)
 	viper.AddConfigPath("/etc/appname/")  // path to look for the config file in
 	viper.AddConfigPath("$HOME/.appname") // call multiple times to add many search paths

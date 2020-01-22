@@ -11,7 +11,8 @@ import (
 )
 
 type Conn struct {
-	Evio     evio.Conn
+	Evio evio.Conn
+
 	upgraded bool
 	ctx      interface{}
 	out      []byte
@@ -26,8 +27,8 @@ func (c *Conn) Write(message []byte) {
 }
 
 func (c *Conn) WriteMessage(message []byte) {
-	c.out, _ = ws.CompileFrame(ws.NewTextFrame(message))
-	c.Evio.Wake()
+	m, _ := ws.CompileFrame(ws.NewTextFrame(message))
+	c.Write(m)
 }
 
 func (c *Conn) Close() {
@@ -156,6 +157,7 @@ func (nano *NanoWebsocket) processData(conn *Conn, in []byte) (out []byte, actio
 	}
 
 	if err != nil {
+		logrus.Error("closig conn. failed to read NextFrame ")
 		action = evio.Close
 		return
 	}

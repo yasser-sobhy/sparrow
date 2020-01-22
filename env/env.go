@@ -4,9 +4,7 @@ type Env struct {
 	environment string
 }
 
-var env = Env{}
-
-func New() Env { return Env{"development"} }
+var env = Env{"development"}
 
 func Is(e string) bool { return env.environment == e }
 

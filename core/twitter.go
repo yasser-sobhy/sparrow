@@ -1,7 +1,7 @@
 package core
 
 type TwitterOptions struct {
-	Code  byte
+	Code  string
 	Scope Scope
 	Post  bool
 	Async bool

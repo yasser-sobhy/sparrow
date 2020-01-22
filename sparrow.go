@@ -14,6 +14,6 @@ func main() {
 		logrus.Info(string(t.Code), string(t.Content))
 		c.WriteMessage([]byte("Hello Sparrow!"))
 		return true
-	}, core.TwitterOptions{Code: '0', Scope: core.NONE})
+	}, core.TwitterOptions{Code: "0", Scope: core.NONE})
 	sparrow.Run()
 }

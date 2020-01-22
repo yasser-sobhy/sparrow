@@ -59,7 +59,7 @@ func (sparrow *Sparrow) OnDisconnection(middleware OnDisconnectionHandler) {
 }
 
 func (sparrow *Sparrow) LogUserIn(id []byte, scope Scope, ws *Conn) bool {
-	if sparrow.users.Put(string(id), ws) {
+	if sparrow.Users.Put(string(id), ws) {
 		//ws.setUserData(new User{id, scope})
 		return true
 	}
@@ -67,7 +67,7 @@ func (sparrow *Sparrow) LogUserIn(id []byte, scope Scope, ws *Conn) bool {
 }
 
 func (sparrow *Sparrow) LogUserOut(id []byte, ws Conn) bool {
-	success := sparrow.users.Delete(string(id))
+	success := sparrow.Users.Delete(string(id))
 	//ws.setUserData(nullptr)
 	return success
 }
@@ -102,7 +102,7 @@ func (sparrow *Sparrow) Run() {
 
 		if tweet.Valid() {
 			middlewares := sparrow.Flock.GetMiddlewares(scope)
-			twitter, twitterOk := sparrow.Flock.Get(tweet.Code[0], scope)
+			twitter, twitterOk := sparrow.Flock.Get(tweet.Code, scope)
 			postMiddlewares := sparrow.Flock.GePosttMiddlewares(scope)
 
 			if twitterOk {

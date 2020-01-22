@@ -8,7 +8,7 @@ type OnConnectionHandler func(*Conn, *ws.Handshake) bool
 type OnDisconnectionHandler func(*Conn, *User) bool
 
 type Flock struct {
-	twitters map[Scope]map[byte]TweetHandler
+	twitters map[Scope]map[string]TweetHandler
 
 	middlewares     map[Scope][]TweetHandler
 	postMiddlewares map[Scope][]TweetHandler
@@ -19,11 +19,11 @@ type Flock struct {
 
 func NewFlock() Flock {
 	return Flock{
-		twitters: map[Scope]map[byte]TweetHandler{
-			ANY:   map[byte]TweetHandler{},
-			NONE:  map[byte]TweetHandler{},
-			USER:  map[byte]TweetHandler{},
-			ADMIN: map[byte]TweetHandler{},
+		twitters: map[Scope]map[string]TweetHandler{
+			ANY:   map[string]TweetHandler{},
+			NONE:  map[string]TweetHandler{},
+			USER:  map[string]TweetHandler{},
+			ADMIN: map[string]TweetHandler{},
 		},
 
 		middlewares:     map[Scope][]TweetHandler{},
@@ -48,7 +48,7 @@ func (flock *Flock) AddMany(twitters []TweetHandler, options TwitterOptions) {
 }
 
 // retrieve a twitter
-func (flock *Flock) Get(code byte, scope Scope) (TweetHandler, bool) {
+func (flock *Flock) Get(code string, scope Scope) (TweetHandler, bool) {
 	// TDOD: handle duplicate twitter
 	if v, ok := flock.twitters[scope]; ok {
 		return v[code], true

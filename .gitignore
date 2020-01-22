@@ -16,3 +16,4 @@
 sparrow.code-workspace
 .DS_Store
 sparrow
+sparrow_test.go

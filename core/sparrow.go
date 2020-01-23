@@ -14,8 +14,8 @@ type Sparrow struct {
 	// contains twitters, followers, leaders, middlewares, and postwares
 	Flock       Flock
 	TweetParser TweetParser
-	Users       trie.PathTrie
-	Channels    trie.PathTrie
+	Users       *trie.PathTrie
+	Channels    *trie.PathTrie
 }
 
 // New creates a new Sparrow instance
@@ -23,6 +23,8 @@ func NewSparrow() *Sparrow {
 	return &Sparrow{
 		TweetParser: &CompactTweetParser{},
 		Flock:       NewFlock(),
+		Users:       trie.NewPathTrie(),
+		Channels:    trie.NewPathTrie(),
 	}
 }
 
@@ -96,6 +98,7 @@ func (sparrow *Sparrow) Run() {
 		user, userOk := c.Context().(*User)
 		tweet := sparrow.TweetParser.Parse(message.Payload)
 		scope := NONE
+
 		if userOk {
 			scope = user.Scope
 		}

@@ -5,7 +5,7 @@ import (
 )
 
 // CompactTweetParser parses tweets encoded using compact tweet format
-// a compact tweet format is [code;arg1:arg1v:arg2:arg2v:argN:argNv;content]
+// a compact tweet format is [code;arg1=arg1v,arg2=arg2v,argN=argNv;content]
 // arguments and content are optional
 // code, args, content must end with ;
 type CompactTweetParser struct {
@@ -59,10 +59,24 @@ func (parser *CompactTweetParser) Serialize(tweet *Tweet) []byte {
 func (parser *CompactTweetParser) processArguments(src []byte) map[string]string {
 	arguments := map[string]string{}
 
+	sep := 0
+	beg := 0
 	for i, char := range src {
-		if char == ':' {
-			arguments[string(src[i:])] = string(src[:i])
+
+		if char == '=' {
+			sep = i
+			continue
 		}
+
+		if char == ',' {
+			arguments[string(src[beg:sep])] = string(src[sep+1 : i])
+			beg = i + 1
+		}
+	}
+
+	// read last arg if there was a separator after the last ,
+	if sep > beg {
+		arguments[string(src[beg:sep])] = string(src[sep+1:])
 	}
 
 	return arguments

@@ -51,7 +51,8 @@ func (flock *Flock) AddMany(twitters []TweetHandler, options TwitterOptions) {
 func (flock *Flock) Get(code string, scope Scope) (TweetHandler, bool) {
 	// TDOD: handle duplicate twitter
 	if v, ok := flock.twitters[scope]; ok {
-		return v[code], true
+		v, ok := v[code]
+		return v, ok
 	}
 	return nil, false
 }
@@ -67,12 +68,12 @@ func (flock *Flock) AddMiddleware(twitter TweetHandler, options MiddlewareOption
 
 // middlewares with Scope.Any should be returned here, even if scope was diffferent
 func (flock *Flock) GetMiddlewares(scope Scope) []TweetHandler {
-	return flock.postMiddlewares[scope]
+	return flock.middlewares[scope]
 }
 
 // middlewares with Scope.Any should be returned here, even if scope was diffferent
 func (flock *Flock) GePosttMiddlewares(scope Scope) []TweetHandler {
-	return flock.middlewares[scope]
+	return flock.postMiddlewares[scope]
 }
 
 // install a single middleware to be run when a new ws is connected

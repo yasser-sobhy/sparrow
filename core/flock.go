@@ -3,9 +3,9 @@ package core
 import "github.com/gobwas/ws"
 
 // Conn, user,   tweet,    twitter,      success: the result of the ran twitter, for post middlewares
-type TweetHandler func(*Conn, *User, *Tweet) bool
+type TweetHandler func(*Conn, User, *Tweet) bool
 type OnConnectionHandler func(*Conn, *ws.Handshake)
-type OnDisconnectionHandler func(*Conn, *User)
+type OnDisconnectionHandler func(*Conn, User)
 
 type Flock struct {
 	twitters map[Scope]map[string]TweetHandler

@@ -20,7 +20,7 @@ func NewDebug() *Debug {
 }
 
 func (debug *Debug) Congregate(flock *core.Flock, options core.MiddlewareOptions) {
-	process := func(ws *core.Conn, user *core.User, tweet *core.Tweet) bool {
+	process := func(ws *core.Conn, user core.User, tweet *core.Tweet) bool {
 		logrus.Info("New Tweet: {}", tweet.Raw)
 		return true
 	}

@@ -6,7 +6,7 @@ type Online struct {
 }
 
 func (twitter *Twitter) Congregate(flock *core.Flock, options core.twitt) {
-    process := func(ws *core.Conn, user *core.User, tweet *core.Tweet) bool {
+    process := func(ws *core.Conn, user core.User, tweet *core.Tweet) bool {
         if user := users.Get(tweet.Arguments[0].Value) {
             ws.send(tweet.Raw)
             return true

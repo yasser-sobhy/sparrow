@@ -1,6 +1,6 @@
 package core
 
-type User struct {
-	ID    string
-	Scope Scope
+type User interface {
+	ID() string
+	Scope() Scope
 }

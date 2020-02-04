@@ -89,18 +89,18 @@ func (sparrow *Sparrow) Run() {
 		user, _ := c.Context().(User)
 
 		for _, middleware := range sparrow.Flock.OnDisconnectionMiddlewares {
-			middleware(c, &user)
+			middleware(c, user)
 		}
 		return
 	}
 
 	nano.OnMessage = func(c *Conn, message wsutil.Message) (out []byte, action evio.Action) {
-		user, userOk := c.Context().(*User)
+		user, userOk := c.Context().(User)
 		tweet := sparrow.TweetParser.Parse(message.Payload)
 		scope := NONE
 
 		if userOk {
-			scope = user.Scope
+			scope = user.Scope()
 		}
 
 		if tweet.Valid() {

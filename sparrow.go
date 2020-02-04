@@ -10,7 +10,7 @@ func main() {
 	var sparrow *core.Sparrow = core.NewSparrow()
 	sparrow.InstallMiddleware(&middlewares.Debug{}, core.MiddlewareOptions{})
 
-	sparrow.Use(func(c *core.Conn, u *core.User, t *core.Tweet) bool {
+	sparrow.Use(func(c *core.Conn, u core.User, t *core.Tweet) bool {
 		logrus.Info(string(t.Code), string(t.Content))
 		c.WriteMessage([]byte("Hello Sparrow!"))
 		return true

@@ -26,7 +26,7 @@ func NewLog() *Log {
 
 func (log *Log) Congregate(flock *core.Flock, options core.MiddlewareOptions) {
 	// TODO use a dedicated logger here not Sparrow::Logger
-	process := func(ws *core.Conn, user *core.User, tweet *core.Tweet) bool {
+	process := func(ws *core.Conn, user core.User, tweet *core.Tweet) bool {
 		if log.LogFullTweet {
 			logrus.Info("New Tweet: {}{}", user.ID, tweet.Raw)
 		} else {

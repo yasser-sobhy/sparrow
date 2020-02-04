@@ -11,19 +11,15 @@ import (
 )
 
 type Conn struct {
-	Evio evio.Conn
+	evio.Conn
 
 	upgraded bool
-	ctx      interface{}
 	out      []byte
 }
 
-func (c *Conn) Context() interface{}       { return c.ctx }
-func (c *Conn) SetContext(ctx interface{}) { c.ctx = ctx }
-
 func (c *Conn) Write(message []byte) {
 	c.out = message
-	c.Evio.Wake()
+	c.Wake()
 }
 
 func (c *Conn) WriteMessage(message []byte) {
@@ -64,7 +60,7 @@ func (nano *NanoWebsocket) Serve(addr ...string) error {
 
 	var events evio.Events
 	events.Opened = func(conn evio.Conn) (out []byte, opts evio.Options, action evio.Action) {
-		c := Conn{Evio: conn, upgraded: false}
+		c := Conn{conn, false, nil}
 		conn.SetContext(&c)
 		return
 	}

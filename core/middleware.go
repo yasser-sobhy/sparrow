@@ -4,9 +4,10 @@ package core
 type MiddlewareOptions struct {
 	Scope Scope
 	Post  bool
+	Async bool
 }
 
-// Middleware sparrow middleware should implement this interface
+// Middleware sparrow middlewares should implement this interface
 type Middleware interface {
 	// register middleware
 	Congregate(flock *Flock, options MiddlewareOptions)
